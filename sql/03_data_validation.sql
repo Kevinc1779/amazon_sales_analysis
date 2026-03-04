@@ -14,4 +14,5 @@ SELECT
   is_couponed,
   buy_box_availability
 FROM amazon_sales_cleaned
+
 LIMIT 20;

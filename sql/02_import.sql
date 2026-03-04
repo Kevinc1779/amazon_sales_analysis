@@ -8,12 +8,14 @@ IGNORE 1 LINES
 (@title, @rating, @reviews, @bought, @discounted, @listed, @best, @sponsored, @couponed, @buybox)
 SET
   title = NULLIF(@title,''),
-  rating = NULLIF(@rating,''),
-  number_of_reviews = NULLIF(@reviews,''),
-  bought_in_last_month = NULLIF(@bought,''),
-  discounted_price = NULLIF(@discounted,''),
-  listed_price = NULLIF(@listed,''),
-  is_best_seller = CASE UPPER(@best) WHEN 'TRUE' THEN 1 WHEN 'FALSE' THEN 0 ELSE NULL END,
-  is_sponsored   = CASE UPPER(@sponsored) WHEN 'TRUE' THEN 1 WHEN 'FALSE' THEN 0 ELSE NULL END,
-  is_couponed    = CASE UPPER(@couponed) WHEN 'TRUE' THEN 1 WHEN 'FALSE' THEN 0 ELSE NULL END,
-  buy_box_availability = NULLIF(@buybox,'');
+  rating = NULLIF(NULLIF(@rating,''), 'NaN'),
+  number_of_reviews = NULLIF(NULLIF(@reviews,''), 'NaN'),
+  bought_in_last_month = NULLIF(NULLIF(@bought,''), 'NaN'),
+  discounted_price = NULLIF(NULLIF(@discounted,''), 'NaN'),
+  listed_price = NULLIF(NULLIF(@listed,''), 'NaN'),
+
+  is_best_seller = NULLIF(NULLIF(@best,''), 'NaN'),
+  is_sponsored   = NULLIF(NULLIF(@sponsored,''), 'NaN'),
+  is_couponed    = NULLIF(NULLIF(@couponed,''), 'NaN'),
+
+  buy_box_availability = NULLIF(NULLIF(@buybox,''), 'NaN');
