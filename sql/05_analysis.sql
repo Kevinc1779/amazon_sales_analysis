@@ -111,6 +111,31 @@ ORDER BY product_count DESC;
 
 
 -- Query 11: Top products by demand
+WITH ranked AS (
+  SELECT
+    title,
+    bought_in_last_month,
+    rating,
+    number_of_reviews,
+    discounted_price,
+    listed_price,
+    ROUND((listed_price - discounted_price) / listed_price * 100, 2) AS discount_pct,
+    ROW_NUMBER() OVER (
+      PARTITION BY title
+      ORDER BY
+        bought_in_last_month DESC,
+        rating DESC,
+        number_of_reviews DESC,
+        (listed_price - discounted_price) DESC
+    ) AS rn
+  FROM amazon_sales_cleaned
+  WHERE bought_in_last_month IS NOT NULL
+    AND rating IS NOT NULL
+    AND number_of_reviews IS NOT NULL
+    AND listed_price IS NOT NULL
+    AND discounted_price IS NOT NULL
+    AND listed_price > 0
+)
 SELECT
   title,
   bought_in_last_month,
@@ -118,15 +143,10 @@ SELECT
   number_of_reviews,
   discounted_price,
   listed_price,
-  ROUND(100 * (listed_price - discounted_price) / listed_price, 2) AS discount_pct,
+  discount_pct,
   DENSE_RANK() OVER (ORDER BY bought_in_last_month DESC) AS demand_rank
-FROM amazon_sales_cleaned
-WHERE bought_in_last_month IS NOT NULL
-  AND rating IS NOT NULL
-  AND number_of_reviews IS NOT NULL
-  AND listed_price IS NOT NULL
-  AND discounted_price IS NOT NULL
-  AND listed_price > 0
+FROM ranked
+WHERE rn = 1
 ORDER BY bought_in_last_month DESC, rating DESC, number_of_reviews DESC
 LIMIT 20;
 
